@@ -19,14 +19,14 @@ Desde la raíz del proyecto, en PowerShell:
 go mod tidy
 ```
 
-Configura las variables de entorno antes de iniciar el servidor:
+Configura las variables de entorno antes de iniciar el servidor: (estas son las mias xd)
 
 ```powershell
 $env:FILESYNC_USER_ID = "usuario"
 $env:FILESYNC_TOKEN = "token"
-$env:FILESYNC_TLS_CERT = "C:\ruta\server.crt"
-$env:FILESYNC_TLS_KEY = "C:\ruta\server.key"
-$env:FILESYNC_DATA_DIR = "C:\ruta\data"
+$env:FILESYNC_TLS_CERT = "C:\filesync\certs\server.crt"
+$env:FILESYNC_TLS_KEY = "C:\filesync\certs\server.key"
+$env:FILESYNC_DATA_DIR = "C:\filesync\data"
 ```
 
 Después, inicia el servidor:
