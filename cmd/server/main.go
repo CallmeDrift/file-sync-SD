@@ -18,6 +18,8 @@ import (
 	"time"
 
 	pb "filesync-prototype/api/filesync/v1"
+
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -183,7 +185,13 @@ func (s *fileSyncServer) UploadFile(stream grpc.ClientStreamingServer[pb.UploadF
 	if e != nil {
 		return e
 	}
-	defer os.Remove(f.Name())
+	keepStagedFile := false
+	defer func() {
+		f.Close()
+		if !keepStagedFile {
+			os.Remove(f.Name())
+		}
+	}()
 	hash := sha256.New()
 	var size int64
 	for {
@@ -217,6 +225,7 @@ func (s *fileSyncServer) UploadFile(stream grpc.ClientStreamingServer[pb.UploadF
 	s.mu.Lock()
 	s.staging[head.GetSyncId()+"|"+p] = staged{f.Name(), sum, head.GetDeviceId()}
 	s.mu.Unlock()
+	keepStagedFile = true
 	return stream.SendAndClose(&pb.UploadFileResponse{SyncId: head.GetSyncId(), Path: p, BytesReceived: size, Sha256: sum})
 }
 func (s *fileSyncServer) DownloadFile(q *pb.DownloadFileRequest, stream grpc.ServerStreamingServer[pb.FileChunk]) error {
@@ -357,6 +366,9 @@ func (s *fileSyncServer) CommitSync(ctx context.Context, q *pb.CommitSyncRequest
 	return out, nil
 }
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No se encontró el archivo .env; se usarán las variables del sistema")
+	}
 	root := os.Getenv("FILESYNC_DATA_DIR")
 	if root == "" {
 		root = "./data"

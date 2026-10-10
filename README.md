@@ -19,7 +19,11 @@ Desde la raíz del proyecto, en PowerShell:
 go mod tidy
 ```
 
-Configura las variables de entorno antes de iniciar el servidor: (estas son las mias xd)
+Puedes copiar `.env.example` a `.env` y reemplazar los valores de ejemplo por
+los reales. El servidor carga ese archivo automáticamente al iniciar; si no
+existe, usa las variables de entorno del sistema. No subas `.env` a GitHub.
+Como alternativa, configura las variables de entorno antes de iniciar el
+servidor:
 
 ```powershell
 $env:FILESYNC_USER_ID = "usuario"
